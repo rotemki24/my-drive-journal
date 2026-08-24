@@ -40,33 +40,23 @@ let draftTasks = [], selectedKind = 'fixed', selectedDays = []
 function renderDateOptions() { const target = document.querySelector('#schedule-date-options'); if (!target) return; target.innerHTML = selectedKind === 'fixed' ? `<div class="field-group"><span>באילו ימים?</span><div class="weekday-picker">${weekdayNames.map((name, i) => `<button class="${selectedDays.includes(i) ? 'active' : ''}" data-weekday="${i}">${name}</button>`).join('')}</div></div>` : `<label>תאריך<input id="specific-date" type="date" value="${dayKey(selectedDate)}"></label>` }
 function renderDraftTasks() { const list = document.querySelector('#draft-tasks'); if (list) list.innerHTML = draftTasks.map((task) => `<li><button data-remove-task="${task.id}">×</button>${escape(task.title)}</li>`).join('') }
 
-function launchWebShot(button) {
+function launchCityFlight(button) {
   const rect = button.getBoundingClientRect()
-  const originX = window.innerWidth * 0.5
-  const originY = window.innerHeight - 24
   const targetX = rect.left + rect.width / 2
   const targetY = rect.top + rect.height / 2
-  const dx = targetX - originX
-  const dy = targetY - originY
-  const distance = Math.hypot(dx, dy)
-  const angle = Math.atan2(dy, dx) * 180 / Math.PI
-  const thread = document.createElement('span')
-  const impact = document.createElement('span')
-  thread.className = 'web-thread'
-  impact.className = 'web-impact'
-  thread.style.setProperty('--origin-x', `${originX}px`)
-  thread.style.setProperty('--origin-y', `${originY}px`)
-  thread.style.setProperty('--distance', `${distance}px`)
-  thread.style.setProperty('--angle', `${angle}deg`)
-  impact.style.left = `${targetX}px`
-  impact.style.top = `${targetY}px`
-  document.body.append(thread, impact)
-  window.setTimeout(() => { thread.remove(); impact.remove() }, 720)
+  const flight = document.createElement('div')
+  flight.className = 'city-flight'
+  flight.style.setProperty('--target-x', `${targetX}px`)
+  flight.style.setProperty('--target-y', `${targetY}px`)
+  flight.innerHTML = `<div class="sky glow"></div><div class="tower-photo avengers"><img src="/assets/avengers-tower.png" alt="Avengers Tower"></div><div class="tower-photo bugle"><img src="/assets/daily-bugle.png" alt="Daily Bugle"></div><div class="city-back"></div><div class="city-front"></div><div class="web-line"></div><img class="spider-run" src="/assets/spider-swing.png" alt=""><div class="landing-web"></div>`
+  document.body.append(flight)
+  requestAnimationFrame(() => flight.classList.add('launch'))
+  window.setTimeout(() => flight.remove(), 1120)
 }
 
 document.addEventListener('pointerdown', (event) => {
   const button = event.target.closest('button')
-  if (button && !button.disabled) launchWebShot(button)
+  if (button && !button.disabled) launchCityFlight(button)
 }, { capture: true })
 
 document.addEventListener('click', (event) => {
