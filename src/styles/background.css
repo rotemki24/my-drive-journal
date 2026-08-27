@@ -25,3 +25,6 @@
 .drive-app.light .goal-card header button { color: #173650; }
 .drive-app.light .add { background: #f2f9ffdd; border-color: #3f759c; color: #153650; }
 .drive-app.light .grid button { background: #edf5fb; border-color: #5a86a655; color: #173650; }
+
+/* Prevent iOS Safari from zooming the page when a text field receives focus. */
+.goal-card textarea, .modal input { font-size: 16px; }
