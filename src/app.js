@@ -16,11 +16,14 @@ const dk = x => [x.getFullYear(), String(x.getMonth() + 1).padStart(2, '0'), Str
 const save = () => localStorage.setItem(key, JSON.stringify(s))
 const e = x => String(x || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
 const value = id => (s.days[dk(d)] || {})[id] || { improve: '', maintain: '', note: '', done: false }
-const isVisibleToday = column => column.schedule !== 'specific' || column.weekdays?.includes(d.getDay())
-const scheduleLabel = column => column.schedule === 'specific' ? 'SPECIFIC DAYS' : column.schedule === 'fixed' ? 'PERMANENT' : 'DAILY'
+const isVisibleToday = column => {
+  if (column.schedule === 'once') return column.date === dk(d)
+  return column.schedule !== 'specific' || column.weekdays?.includes(d.getDay())
+}
+const scheduleLabel = column => column.schedule === 'specific' ? 'SPECIFIC DAYS' : column.schedule === 'fixed' ? 'PERMANENT' : column.schedule === 'once' ? 'SPECIFIC DAY' : 'PERMANENT'
 const dayActivity = date => Object.values(s.days[dk(date)] || {}).filter(item => item.done || item.improve || item.maintain || item.note).length
 const teams = [
-  { name: 'Hapoel Tel Aviv', logo: '/assets/hapoel-tel-aviv.png', terms: ['הפועל תל אביב', 'hapoel tel aviv'] },
+  { name: 'Hapoel Tel Aviv', logo: '/assets/hapoel-tel-aviv.png', terms: ['הפועל', 'hapoel tel aviv'] },
   { name: 'Tottenham', logo: '/assets/tottenham.svg', terms: ['טוטנהאם', 'tottenham', 'spurs'] },
   { name: 'England', logo: '/assets/england.png', terms: ['אנגליה', 'england'] }
 ]
@@ -36,7 +39,7 @@ function card(c) {
 
 function modal() {
   const days = weekdays.map(([hebrew, english], i) => `<button type="button" class="weekday ${draftWeekdays.includes(i) ? 'selected' : ''}" data-weekday="${i}"><b>${hebrew}</b><span>${english}</span></button>`).join('')
-  return `<div class="modal"><form><button type="button" aria-label="Close" data-action="close">×</button><small>NEW COLUMN</small><h2>Column title</h2><input autofocus data-title-input value="${e(draftTitle)}" placeholder="Training, Work, Health"><div class="schedule-title">WHEN SHOULD IT APPEAR?</div><div class="schedule-options"><button type="button" class="${draftSchedule === 'daily' ? 'selected' : ''}" data-schedule="daily">DAILY</button><button type="button" class="${draftSchedule === 'fixed' ? 'selected' : ''}" data-schedule="fixed">PERMANENT</button><button type="button" class="${draftSchedule === 'specific' ? 'selected' : ''}" data-schedule="specific">SPECIFIC DAYS</button></div>${draftSchedule === 'specific' ? `<div class="weekdays">${days}</div>` : ''}<button>Create column</button></form></div>`
+  return `<div class="modal"><form><button type="button" aria-label="Close" data-action="close">×</button><small>NEW COLUMN</small><h2>Column title</h2><input autofocus data-title-input value="${e(draftTitle)}" placeholder="Training, Work, Health"><div class="schedule-title">WHEN SHOULD IT APPEAR?</div><div class="schedule-options"><button type="button" class="${draftSchedule === 'once' ? 'selected' : ''}" data-schedule="once">SPECIFIC DAY</button><button type="button" class="${draftSchedule === 'fixed' ? 'selected' : ''}" data-schedule="fixed">PERMANENT</button><button type="button" class="${draftSchedule === 'specific' ? 'selected' : ''}" data-schedule="specific">SPECIFIC DAYS</button></div>${draftSchedule === 'specific' ? `<div class="weekdays">${days}</div>` : ''}<button>Create column</button></form></div>`
 }
 
 function journal() {
@@ -49,9 +52,9 @@ function journal() {
     const activity = dayActivity(date)
     const matches = teamsForDay(date)
     const selected = number === d.getDate()
-    return `<button class="folder-day ${activity ? 'has-content' : ''} ${matches.length ? 'match-day' : ''} ${selected ? 'selected' : ''}" data-day="${number}" style="--sheets:${Math.min(activity, 3)}"><span class="folder-tab"></span><strong>${number}</strong>${matches.length ? `<span class="match-badges">${matches.map(team => `<img class="team-badge" src="${team.logo}" alt="${team.name}" title="${team.name}">`).join('')}</span>` : ''}${activity ? `<small>${activity} ${activity === 1 ? 'ITEM' : 'ITEMS'}</small><i></i>` : '<small>EMPTY</small>'}</button>`
+    return `<button class="folder-day ${activity ? 'has-content' : ''} ${matches.length ? 'match-day' : ''} ${selected ? 'selected' : ''}" data-day="${number}"><span class="folder-tab"></span><strong>${number}</strong>${matches.length ? `<span class="match-badges">${matches.map(team => `<img class="team-badge" src="${team.logo}" alt="${team.name}" title="${team.name}">`).join('')}</span>` : ''}${activity ? `<small>${activity} ${activity === 1 ? 'NOTE' : `${activity} NOTES`}</small><i></i>` : ''}</button>`
   }).join('')
-  return `<section class="journal"><div class="journal-heading"><h2>MONTHLY JOURNAL</h2><span>${d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase()}</span></div><div class="grid folders">${blanks}${folders}</div></section>`
+  return `<section class="journal"><div class="journal-heading"><button aria-label="Previous month" data-action="month-prev">‹</button><div><h2>MONTHLY JOURNAL</h2><span>${d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }).toUpperCase()}</span></div><button aria-label="Next month" data-action="month-next">›</button></div><div class="week-head"><span>א׳</span><span>ב׳</span><span>ג׳</span><span>ד׳</span><span>ה׳</span><span>ו׳</span><span>ש׳</span></div><div class="grid folders">${blanks}${folders}</div></section>`
 }
 
 function render() {
@@ -62,9 +65,10 @@ function render() {
 
 document.addEventListener('click', ev => {
   const action = ev.target.closest('[data-action]')?.dataset.action
-  if (action === 'add') { adding = true; draftSchedule = 'daily'; draftWeekdays = []; draftTitle = ''; render(); return }
+  if (action === 'add') { adding = true; draftSchedule = 'once'; draftWeekdays = []; draftTitle = ''; render(); return }
   if (action === 'close') { adding = false; render(); return }
   if (action === 'theme') { theme = theme === 'light' ? 'dark' : 'light'; localStorage.setItem(themeKey, theme); render(); return }
+  if (action === 'month-prev' || action === 'month-next') { const shift = action === 'month-prev' ? -1 : 1; const next = new Date(d.getFullYear(), d.getMonth() + shift, 1); d = new Date(next.getFullYear(), next.getMonth(), Math.min(d.getDate(), new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate())); render(); return }
   const schedule = ev.target.closest('[data-schedule]')?.dataset.schedule
   if (schedule) { draftSchedule = schedule; render(); return }
   const weekday = ev.target.closest('[data-weekday]')?.dataset.weekday
@@ -74,7 +78,7 @@ document.addEventListener('click', ev => {
   id = ev.target.closest('[data-delete]')?.dataset.delete
   if (id) { s.cols = s.cols.filter(c => c.id !== id); save(); render(); return }
   const day = ev.target.closest('[data-day]')?.dataset.day
-  if (day) { d = new Date(d.getFullYear(), d.getMonth(), day); render(); scrollTo({ top: 0, behavior: 'smooth' }) }
+  if (day) { d = new Date(d.getFullYear(), d.getMonth(), day); render() }
 })
 document.addEventListener('input', ev => {
   if (ev.target.matches('textarea')) put(ev.target.dataset.id, ev.target.dataset.field, ev.target.value)
@@ -85,7 +89,7 @@ document.addEventListener('submit', ev => {
   ev.preventDefault()
   const title = draftTitle.trim()
   if (!title || (draftSchedule === 'specific' && !draftWeekdays.length)) return
-  s.cols.push({ id: crypto.randomUUID(), title, schedule: draftSchedule, weekdays: draftWeekdays })
+  s.cols.push({ id: crypto.randomUUID(), title, schedule: draftSchedule, weekdays: draftWeekdays, date: draftSchedule === 'once' ? dk(d) : null })
   save(); adding = false; draftTitle = ''; render()
 })
 function put(id, field, v) { const k = dk(d); s.days[k] ||= {}; s.days[k][id] = { ...value(id), [field]: v }; save() }
