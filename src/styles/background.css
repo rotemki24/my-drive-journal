@@ -1,3 +1,25 @@
 .road-scene {
   background-image: linear-gradient(#07101bb3, #050a10ed), url('/assets/autobahn-drive-clean.png') !important;
 }
+
+.top-actions { display: flex; align-items: center; gap: 7px; }
+.theme-toggle { background: #07111acc; border: 1px solid #81b7dc88; border-radius: 10px; color: #d7efff; padding: 9px; font: 600 .62rem Montserrat, Arial; letter-spacing: .06em; }
+.goal-card header div { flex: 1; }
+.goal-card header small { color: #91bede; font-size: .55rem; letter-spacing: .12em; }
+.schedule-title { color: #91bede; font-size: .62rem; font-weight: 700; letter-spacing: .12em; margin-top: 20px; }
+.schedule-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin: 9px 0 12px; }
+.schedule-options button, .weekday { border: 1px solid #668ba6; border-radius: 9px; background: #071019; color: #b9cee0; min-height: 42px; padding: 7px 4px; font: 600 .57rem Montserrat, Arial; letter-spacing: .04em; }
+.schedule-options button.selected, .weekday.selected { border-color: #e63b4d; background: #e63b4d; color: white; }
+.weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin: 0 0 12px; }
+.weekday { display: grid; place-items: center; gap: 3px; min-height: 48px; }
+.weekday b { font-size: .8rem; }.weekday span { font-size: .42rem; }
+.drive-app.light { color: #102030; }
+.drive-app.light .road-scene { background-image: linear-gradient(#ffffff52, #dce7f3bf), url('/assets/autobahn-drive-day.png') !important; }
+.drive-app.light .top small, .drive-app.light label, .drive-app.light .goal-card header small { color: #255d88; }
+.drive-app.light .top span, .drive-app.light .theme-toggle { background: #ffffffba; border-color: #48799f; color: #15304a; }
+.drive-app.light .goal-card, .drive-app.light .journal { background: #f7fbffdc; border-color: #4c7da0bb; box-shadow: 0 12px 30px #54728c33; }
+.drive-app.light .goal-card h2, .drive-app.light .goal-card textarea { color: #102030; }
+.drive-app.light .goal-card textarea { border-bottom-color: #4c7da055; }
+.drive-app.light .goal-card header button { color: #173650; }
+.drive-app.light .add { background: #f2f9ffdd; border-color: #3f759c; color: #153650; }
+.drive-app.light .grid button { background: #edf5fb; border-color: #5a86a655; color: #173650; }
