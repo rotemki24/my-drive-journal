@@ -28,3 +28,30 @@
 
 /* Prevent iOS Safari from zooming the page when a text field receives focus. */
 .goal-card textarea, .modal input { font-size: 16px; }
+
+.journal-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.journal-heading span { color: #8ebee0; font: 600 .58rem Montserrat, Arial; letter-spacing: .13em; }
+.folders { gap: 9px; }
+.journal-blank { display: block; }
+.grid .folder-day { position: relative; overflow: visible; aspect-ratio: .82; border: 1px solid #6b9abc99; border-radius: 5px 9px 9px 9px; background: linear-gradient(135deg, #1c3548, #0c1823); color: #d8ebfa; padding: 10px 4px 5px; text-align: center; box-shadow: 0 5px 10px #0004; transition: transform .18s ease, border-color .18s ease; }
+.folder-day .folder-tab { position: absolute; top: -4px; left: 4px; width: 42%; height: 7px; border: inherit; border-bottom: 0; border-radius: 5px 5px 0 0; background: #1c3548; }
+.folder-day strong { display: block; font-size: .85rem; }
+.folder-day small { display: block; margin-top: 6px; color: #85b5d9; font: 600 .38rem Montserrat, Arial; letter-spacing: .06em; }
+.folder-day.has-content { border-color: #e14d5a; background: linear-gradient(135deg, #432330, #171e2b); }
+.folder-day.has-content .folder-tab { background: #432330; }
+.folder-day.has-content i { display: block; width: 65%; height: 2px; margin: 5px auto 0; border-radius: 8px; background: #f05a65; box-shadow: 0 4px 0 #f05a6566, 0 8px 0 #f05a6533; }
+.folder-day.selected { transform: translateY(-4px); border-color: #e94353; box-shadow: 0 8px 16px #e43e4d55; }
+.folder-day:active { transform: scale(.94); }
+.drive-app.light .journal-heading span { color: #255d88; }
+.drive-app.light .grid .folder-day { background: linear-gradient(135deg, #e1f2ff, #bcd7ec); border-color: #5e88a7; color: #173650; box-shadow: 0 5px 10px #52718c33; }
+.drive-app.light .folder-day .folder-tab { background: #e1f2ff; }
+.drive-app.light .folder-day.has-content { background: linear-gradient(135deg, #ffd7d9, #f3a7ae); border-color: #d94554; }
+.drive-app.light .folder-day.has-content .folder-tab { background: #ffd7d9; }
+.drive-app.light .folder-day small { color: #315e80; }
+.match-badges { display: flex; justify-content: center; gap: 3px; margin-top: 5px; }
+.team-badge { display: grid; place-items: center; width: 18px; height: 18px; border: 1px solid #ffffff99; border-radius: 50%; color: white; font: 700 .38rem Arial, sans-serif; line-height: 1; box-shadow: 0 2px 5px #0005; }
+.team-badge.hapoel { background: #d91e2f; font-size: .55rem; }
+.team-badge.tottenham { background: #142c61; }
+.team-badge.england { background: #c71e2e; }
+.folder-day.match-day { border-color: #ffd16a; box-shadow: 0 0 0 1px #ffd16a55, 0 5px 12px #0006; }
+.drive-app.light .team-badge { border-color: white; }

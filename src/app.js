@@ -18,6 +18,16 @@ const e = x => String(x || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&
 const value = id => (s.days[dk(d)] || {})[id] || { improve: '', maintain: '', note: '', done: false }
 const isVisibleToday = column => column.schedule !== 'specific' || column.weekdays?.includes(d.getDay())
 const scheduleLabel = column => column.schedule === 'specific' ? 'SPECIFIC DAYS' : column.schedule === 'fixed' ? 'PERMANENT' : 'DAILY'
+const dayActivity = date => Object.values(s.days[dk(date)] || {}).filter(item => item.done || item.improve || item.maintain || item.note).length
+const teams = [
+  { name: 'Hapoel Tel Aviv', mark: 'ה׳', className: 'hapoel', terms: ['הפועל תל אביב', 'hapoel tel aviv'] },
+  { name: 'Tottenham', mark: 'TH', className: 'tottenham', terms: ['טוטנהאם', 'tottenham', 'spurs'] },
+  { name: 'England', mark: 'ENG', className: 'england', terms: ['אנגליה', 'england'] }
+]
+const teamsForDay = date => {
+  const text = Object.values(s.days[dk(date)] || {}).map(item => `${item.improve || ''} ${item.maintain || ''} ${item.note || ''}`).join(' ').toLowerCase()
+  return teams.filter(team => team.terms.some(term => text.includes(term.toLowerCase())))
+}
 
 function card(c) {
   const v = value(c.id)
@@ -29,10 +39,25 @@ function modal() {
   return `<div class="modal"><form><button type="button" aria-label="Close" data-action="close">×</button><small>NEW COLUMN</small><h2>Column title</h2><input autofocus data-title-input value="${e(draftTitle)}" placeholder="Training, Work, Health"><div class="schedule-title">WHEN SHOULD IT APPEAR?</div><div class="schedule-options"><button type="button" class="${draftSchedule === 'daily' ? 'selected' : ''}" data-schedule="daily">DAILY</button><button type="button" class="${draftSchedule === 'fixed' ? 'selected' : ''}" data-schedule="fixed">PERMANENT</button><button type="button" class="${draftSchedule === 'specific' ? 'selected' : ''}" data-schedule="specific">SPECIFIC DAYS</button></div>${draftSchedule === 'specific' ? `<div class="weekdays">${days}</div>` : ''}<button>Create column</button></form></div>`
 }
 
+function journal() {
+  const firstDay = new Date(d.getFullYear(), d.getMonth(), 1).getDay()
+  const daysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()
+  const blanks = Array.from({ length: firstDay }, () => '<span class="journal-blank"></span>').join('')
+  const folders = Array.from({ length: daysInMonth }, (_, i) => {
+    const number = i + 1
+    const date = new Date(d.getFullYear(), d.getMonth(), number)
+    const activity = dayActivity(date)
+    const matches = teamsForDay(date)
+    const selected = number === d.getDate()
+    return `<button class="folder-day ${activity ? 'has-content' : ''} ${matches.length ? 'match-day' : ''} ${selected ? 'selected' : ''}" data-day="${number}" style="--sheets:${Math.min(activity, 3)}"><span class="folder-tab"></span><strong>${number}</strong>${matches.length ? `<span class="match-badges">${matches.map(team => `<span class="team-badge ${team.className}" title="${team.name}">${team.mark}</span>`).join('')}</span>` : ''}${activity ? `<small>${activity} ${activity === 1 ? 'ITEM' : 'ITEMS'}</small><i></i>` : '<small>EMPTY</small>'}</button>`
+  }).join('')
+  return `<section class="journal"><div class="journal-heading"><h2>MONTHLY JOURNAL</h2><span>${d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase()}</span></div><div class="grid folders">${blanks}${folders}</div></section>`
+}
+
 function render() {
   const activeColumns = s.cols.filter(isVisibleToday)
   const done = activeColumns.filter(c => value(c.id).done).length
-  root.innerHTML = `<main class="drive-app ${theme === 'light' ? 'light' : ''}"><div class="road-scene"></div><header class="top"><div><b>MY DRIVE</b><small>SCROLL TO DRIVE</small></div><div class="top-actions"><button class="theme-toggle" data-action="theme">${theme === 'light' ? '☾ NIGHT' : '☀ DAY'}</button><span>${done}/${activeColumns.length} DONE</span></div></header><section class="feed">${activeColumns.map(card).join('')}<button class="add" data-action="add">＋ CREATE A COLUMN</button></section><section class="journal"><h2>MONTHLY JOURNAL</h2><div class="grid">${Array.from({ length: 31 }, (_, i) => `<button data-day="${i + 1}">${i + 1}</button>`).join('')}</div></section>${adding ? modal() : ''}</main>`
+  root.innerHTML = `<main class="drive-app ${theme === 'light' ? 'light' : ''}"><div class="road-scene"></div><header class="top"><div><b>MY DRIVE</b><small>SCROLL TO DRIVE</small></div><div class="top-actions"><button class="theme-toggle" data-action="theme">${theme === 'light' ? '☾ NIGHT' : '☀ DAY'}</button><span>${done}/${activeColumns.length} DONE</span></div></header><section class="feed">${activeColumns.map(card).join('')}<button class="add" data-action="add">＋ CREATE A COLUMN</button></section>${journal()}${adding ? modal() : ''}</main>`
 }
 
 document.addEventListener('click', ev => {
