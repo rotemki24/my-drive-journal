@@ -8,6 +8,7 @@ let d = new Date()
 let adding = false
 let draftSchedule = 'daily'
 let draftWeekdays = []
+let draftTitle = ''
 let theme = localStorage.getItem(themeKey) || 'dark'
 
 const weekdays = [['א׳', 'SUN'], ['ב׳', 'MON'], ['ג׳', 'TUE'], ['ד׳', 'WED'], ['ה׳', 'THU'], ['ו׳', 'FRI'], ['ש׳', 'SAT']]
@@ -25,7 +26,7 @@ function card(c) {
 
 function modal() {
   const days = weekdays.map(([hebrew, english], i) => `<button type="button" class="weekday ${draftWeekdays.includes(i) ? 'selected' : ''}" data-weekday="${i}"><b>${hebrew}</b><span>${english}</span></button>`).join('')
-  return `<div class="modal"><form><button type="button" aria-label="Close" data-action="close">×</button><small>NEW COLUMN</small><h2>Column title</h2><input autofocus placeholder="Training, Work, Health"><div class="schedule-title">WHEN SHOULD IT APPEAR?</div><div class="schedule-options"><button type="button" class="${draftSchedule === 'daily' ? 'selected' : ''}" data-schedule="daily">DAILY</button><button type="button" class="${draftSchedule === 'fixed' ? 'selected' : ''}" data-schedule="fixed">PERMANENT</button><button type="button" class="${draftSchedule === 'specific' ? 'selected' : ''}" data-schedule="specific">SPECIFIC DAYS</button></div>${draftSchedule === 'specific' ? `<div class="weekdays">${days}</div>` : ''}<button>Create column</button></form></div>`
+  return `<div class="modal"><form><button type="button" aria-label="Close" data-action="close">×</button><small>NEW COLUMN</small><h2>Column title</h2><input autofocus data-title-input value="${e(draftTitle)}" placeholder="Training, Work, Health"><div class="schedule-title">WHEN SHOULD IT APPEAR?</div><div class="schedule-options"><button type="button" class="${draftSchedule === 'daily' ? 'selected' : ''}" data-schedule="daily">DAILY</button><button type="button" class="${draftSchedule === 'fixed' ? 'selected' : ''}" data-schedule="fixed">PERMANENT</button><button type="button" class="${draftSchedule === 'specific' ? 'selected' : ''}" data-schedule="specific">SPECIFIC DAYS</button></div>${draftSchedule === 'specific' ? `<div class="weekdays">${days}</div>` : ''}<button>Create column</button></form></div>`
 }
 
 function render() {
@@ -36,7 +37,7 @@ function render() {
 
 document.addEventListener('click', ev => {
   const action = ev.target.closest('[data-action]')?.dataset.action
-  if (action === 'add') { adding = true; draftSchedule = 'daily'; draftWeekdays = []; render(); return }
+  if (action === 'add') { adding = true; draftSchedule = 'daily'; draftWeekdays = []; draftTitle = ''; render(); return }
   if (action === 'close') { adding = false; render(); return }
   if (action === 'theme') { theme = theme === 'light' ? 'dark' : 'light'; localStorage.setItem(themeKey, theme); render(); return }
   const schedule = ev.target.closest('[data-schedule]')?.dataset.schedule
@@ -50,14 +51,17 @@ document.addEventListener('click', ev => {
   const day = ev.target.closest('[data-day]')?.dataset.day
   if (day) { d = new Date(d.getFullYear(), d.getMonth(), day); render(); scrollTo({ top: 0, behavior: 'smooth' }) }
 })
-document.addEventListener('input', ev => { if (ev.target.matches('textarea')) put(ev.target.dataset.id, ev.target.dataset.field, ev.target.value) })
+document.addEventListener('input', ev => {
+  if (ev.target.matches('textarea')) put(ev.target.dataset.id, ev.target.dataset.field, ev.target.value)
+  if (ev.target.matches('[data-title-input]')) draftTitle = ev.target.value
+})
 document.addEventListener('submit', ev => {
   if (!ev.target.matches('form')) return
   ev.preventDefault()
-  const title = ev.target.querySelector('input').value.trim()
+  const title = draftTitle.trim()
   if (!title || (draftSchedule === 'specific' && !draftWeekdays.length)) return
   s.cols.push({ id: crypto.randomUUID(), title, schedule: draftSchedule, weekdays: draftWeekdays })
-  save(); adding = false; render()
+  save(); adding = false; draftTitle = ''; render()
 })
 function put(id, field, v) { const k = dk(d); s.days[k] ||= {}; s.days[k][id] = { ...value(id), [field]: v }; save() }
 addEventListener('scroll', () => document.documentElement.style.setProperty('--scroll', scrollY), { passive: true })
