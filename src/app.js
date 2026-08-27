@@ -16,10 +16,11 @@ const dk = x => [x.getFullYear(), String(x.getMonth() + 1).padStart(2, '0'), Str
 const save = () => localStorage.setItem(key, JSON.stringify(s))
 const e = x => String(x || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
 const value = id => (s.days[dk(d)] || {})[id] || { improve: '', maintain: '', note: '', done: false }
-const isVisibleToday = column => {
-  if (column.schedule === 'once') return column.date === dk(d)
-  return column.schedule !== 'specific' || column.weekdays?.includes(d.getDay())
+const appliesOnDate = (column, date) => {
+  if (column.schedule === 'once') return column.date === dk(date)
+  return column.schedule !== 'specific' || column.weekdays?.includes(date.getDay())
 }
+const isVisibleToday = column => appliesOnDate(column, d)
 const scheduleLabel = column => column.schedule === 'specific' ? 'SPECIFIC DAYS' : column.schedule === 'fixed' ? 'PERMANENT' : column.schedule === 'once' ? 'SPECIFIC DAY' : 'PERMANENT'
 const dayActivity = date => Object.values(s.days[dk(date)] || {}).filter(item => item.done || item.improve || item.maintain || item.note).length
 const teams = [
@@ -28,7 +29,12 @@ const teams = [
   { name: 'England', logo: '/assets/england.png', terms: ['אנגליה', 'england'] }
 ]
 const teamsForDay = date => {
-  const text = Object.values(s.days[dk(date)] || {}).map(item => `${item.improve || ''} ${item.maintain || ''} ${item.note || ''}`).join(' ').toLowerCase()
+  const columnTitles = s.cols.filter(column => appliesOnDate(column, date)).map(column => column.title)
+  const notes = Object.entries(s.days[dk(date)] || {}).map(([columnId, item]) => {
+    const title = s.cols.find(column => column.id === columnId)?.title || ''
+    return `${title} ${item.improve || ''} ${item.maintain || ''} ${item.note || ''}`
+  })
+  const text = [...columnTitles, ...notes].join(' ').toLowerCase()
   return teams.filter(team => team.terms.some(term => text.includes(term.toLowerCase())))
 }
 
