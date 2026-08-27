@@ -25,6 +25,7 @@ const scheduleLabel = column => column.schedule === 'specific' ? 'SPECIFIC DAYS'
 const dayActivity = date => Object.values(s.days[dk(date)] || {}).filter(item => item.done || item.improve || item.maintain || item.note).length
 const teams = [
   { name: 'Hapoel Tel Aviv', logo: '/assets/hapoel-tel-aviv.png', terms: ['הפועל', 'hapoel tel aviv'] },
+  { name: 'Maccabi Haifa', logo: '/assets/maccabi-haifa.png', terms: ['מכבי חיפה', 'maccabi haifa'] },
   { name: 'Tottenham', logo: '/assets/tottenham.svg', terms: ['טוטנהאם', 'tottenham', 'spurs'] },
   { name: 'England', logo: '/assets/england.png', terms: ['אנגליה', 'england'] }
 ]
