@@ -20,9 +20,9 @@ const isVisibleToday = column => column.schedule !== 'specific' || column.weekda
 const scheduleLabel = column => column.schedule === 'specific' ? 'SPECIFIC DAYS' : column.schedule === 'fixed' ? 'PERMANENT' : 'DAILY'
 const dayActivity = date => Object.values(s.days[dk(date)] || {}).filter(item => item.done || item.improve || item.maintain || item.note).length
 const teams = [
-  { name: 'Hapoel Tel Aviv', mark: 'ה׳', className: 'hapoel', terms: ['הפועל תל אביב', 'hapoel tel aviv'] },
-  { name: 'Tottenham', mark: 'TH', className: 'tottenham', terms: ['טוטנהאם', 'tottenham', 'spurs'] },
-  { name: 'England', mark: 'ENG', className: 'england', terms: ['אנגליה', 'england'] }
+  { name: 'Hapoel Tel Aviv', logo: '/assets/hapoel-tel-aviv.png', terms: ['הפועל תל אביב', 'hapoel tel aviv'] },
+  { name: 'Tottenham', logo: '/assets/tottenham.svg', terms: ['טוטנהאם', 'tottenham', 'spurs'] },
+  { name: 'England', logo: '/assets/england.png', terms: ['אנגליה', 'england'] }
 ]
 const teamsForDay = date => {
   const text = Object.values(s.days[dk(date)] || {}).map(item => `${item.improve || ''} ${item.maintain || ''} ${item.note || ''}`).join(' ').toLowerCase()
@@ -49,7 +49,7 @@ function journal() {
     const activity = dayActivity(date)
     const matches = teamsForDay(date)
     const selected = number === d.getDate()
-    return `<button class="folder-day ${activity ? 'has-content' : ''} ${matches.length ? 'match-day' : ''} ${selected ? 'selected' : ''}" data-day="${number}" style="--sheets:${Math.min(activity, 3)}"><span class="folder-tab"></span><strong>${number}</strong>${matches.length ? `<span class="match-badges">${matches.map(team => `<span class="team-badge ${team.className}" title="${team.name}">${team.mark}</span>`).join('')}</span>` : ''}${activity ? `<small>${activity} ${activity === 1 ? 'ITEM' : 'ITEMS'}</small><i></i>` : '<small>EMPTY</small>'}</button>`
+    return `<button class="folder-day ${activity ? 'has-content' : ''} ${matches.length ? 'match-day' : ''} ${selected ? 'selected' : ''}" data-day="${number}" style="--sheets:${Math.min(activity, 3)}"><span class="folder-tab"></span><strong>${number}</strong>${matches.length ? `<span class="match-badges">${matches.map(team => `<img class="team-badge" src="${team.logo}" alt="${team.name}" title="${team.name}">`).join('')}</span>` : ''}${activity ? `<small>${activity} ${activity === 1 ? 'ITEM' : 'ITEMS'}</small><i></i>` : '<small>EMPTY</small>'}</button>`
   }).join('')
   return `<section class="journal"><div class="journal-heading"><h2>MONTHLY JOURNAL</h2><span>${d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase()}</span></div><div class="grid folders">${blanks}${folders}</div></section>`
 }

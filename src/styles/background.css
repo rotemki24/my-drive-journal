@@ -49,9 +49,6 @@
 .drive-app.light .folder-day.has-content .folder-tab { background: #ffd7d9; }
 .drive-app.light .folder-day small { color: #315e80; }
 .match-badges { display: flex; justify-content: center; gap: 3px; margin-top: 5px; }
-.team-badge { display: grid; place-items: center; width: 18px; height: 18px; border: 1px solid #ffffff99; border-radius: 50%; color: white; font: 700 .38rem Arial, sans-serif; line-height: 1; box-shadow: 0 2px 5px #0005; }
-.team-badge.hapoel { background: #d91e2f; font-size: .55rem; }
-.team-badge.tottenham { background: #142c61; }
-.team-badge.england { background: #c71e2e; }
+.team-badge { display: block; width: 20px; height: 20px; padding: 1px; border: 1px solid #ffffffaa; border-radius: 50%; background: white; object-fit: contain; box-shadow: 0 2px 5px #0005; }
 .folder-day.match-day { border-color: #ffd16a; box-shadow: 0 0 0 1px #ffd16a55, 0 5px 12px #0006; }
 .drive-app.light .team-badge { border-color: white; }
