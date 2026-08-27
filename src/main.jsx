@@ -4,6 +4,7 @@ import { AddScheduleModal } from './components/AddScheduleModal'
 import { WeekStrip } from './components/WeekStrip'
 import { dayKey, hebrewDate } from './lib/dates'
 import './styles/main.css'
+import './styles/background.css'
 
 const STORAGE_KEY = 'dailyflow-data-v1'
 const defaultData = { schedules: [], completions: {}, metrics: {} }
