@@ -1,3 +1,5 @@
+import './styles/background.css'
+
 const root = document.querySelector('#root')
 const key = 'my-drive-v2'
 const themeKey = 'my-drive-theme'

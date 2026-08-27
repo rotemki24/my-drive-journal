@@ -9,7 +9,9 @@
 .schedule-title { color: #91bede; font-size: .62rem; font-weight: 700; letter-spacing: .12em; margin-top: 20px; }
 .schedule-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin: 9px 0 12px; }
 .schedule-options button, .weekday { border: 1px solid #668ba6; border-radius: 9px; background: #071019; color: #b9cee0; min-height: 42px; padding: 7px 4px; font: 600 .57rem Montserrat, Arial; letter-spacing: .04em; }
+.modal .schedule-options button, .modal .weekdays button { position: static; right: auto; top: auto; width: auto; height: auto; margin: 0; font-size: .57rem; color: #b9cee0; }
 .schedule-options button.selected, .weekday.selected { border-color: #e63b4d; background: #e63b4d; color: white; }
+.modal .schedule-options button.selected, .modal .weekdays button.selected { color: white; }
 .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin: 0 0 12px; }
 .weekday { display: grid; place-items: center; gap: 3px; min-height: 48px; }
 .weekday b { font-size: .8rem; }.weekday span { font-size: .42rem; }
